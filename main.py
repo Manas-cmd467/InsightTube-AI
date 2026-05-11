@@ -1,5 +1,5 @@
 def main():
-    print("Hello from youtube-rag!")
+    print("Hello from transcriptiq!")
 
 
 if __name__ == "__main__":
