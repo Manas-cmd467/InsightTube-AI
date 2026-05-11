@@ -16,7 +16,8 @@ load_dotenv()
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 200
 MAX_CITATION_SNIPPET_LENGTH = 180
-# CHUNK_SIZE/CHUNK_OVERLAP balance QA context continuity with retrieval precision.
+# CHUNK_SIZE=1200 captures roughly 1-2 spoken thoughts per chunk, and
+# CHUNK_OVERLAP=200 (~17%) preserves boundary context without heavy duplication.
 
 # --- HELPER FUNCTIONS ---
 
@@ -55,7 +56,7 @@ def get_transcript_segments(url):
         segments = []
         for item in transcript_list:
             text = getattr(item, "text", "").strip()
-            # Skip empty caption fragments that add no retrieval value.
+            # Auto-captions can include spacing-only artifacts; skip them to avoid noisy embeddings.
             if not text:
                 continue
             start = float(getattr(item, "start", 0.0))
