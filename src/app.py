@@ -106,7 +106,10 @@ def build_citations(docs, limit=3):
         if key in seen:
             continue
         seen.add(key)
-        citations.append({"timestamp": timestamp, "snippet": snippet[:MAX_CITATION_SNIPPET_LENGTH]})
+        truncated_snippet = snippet[:MAX_CITATION_SNIPPET_LENGTH]
+        if len(snippet) > MAX_CITATION_SNIPPET_LENGTH:
+            truncated_snippet += "..."
+        citations.append({"timestamp": timestamp, "snippet": truncated_snippet})
         if len(citations) >= limit:
             break
     return citations

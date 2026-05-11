@@ -6,4 +6,4 @@ sentence-transformers
 python-dotenv
 youtube-transcript-api
 faiss-cpu
-streamlit
+streamlit>=1.47.0
