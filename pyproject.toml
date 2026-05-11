@@ -1,11 +1,17 @@
 [project]
-name = "youtube-rag"
+name = "transcriptiq"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered YouTube transcript question answering with RAG"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "faiss-cpu>=1.11.0.post1",
-    "pytube>=15.0.0",
+    "langchain>=0.3.27",
+    "langchain-community>=0.3.27",
+    "langchain-google-genai>=2.1.8",
+    "langchain-huggingface>=0.3.1",
+    "python-dotenv>=1.1.1",
+    "sentence-transformers>=5.0.0",
     "streamlit>=1.47.0",
+    "youtube-transcript-api>=1.2.2",
 ]
