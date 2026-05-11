@@ -8,6 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import NoTranscriptFound, TranscriptsDisabled, VideoUnavailable
 from langchain_core.runnables import RunnableLambda
 import re
 
@@ -41,6 +42,12 @@ def get_transcript_text(url):
         full_transcript = " ".join(transcripts_new)
         
         return full_transcript, None
+    except TranscriptsDisabled:
+        return None, "Transcripts are disabled for this video."
+    except NoTranscriptFound:
+        return None, "No transcript was found for this video."
+    except VideoUnavailable:
+        return None, "This video is unavailable or cannot be accessed."
     except Exception as e:
         return None, f"An error occurred while fetching the transcript: {e}"
 
