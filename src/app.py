@@ -49,6 +49,8 @@ def get_transcript_segments(url):
 
         ytt_api = YouTubeTranscriptApi()
         transcript_list = ytt_api.fetch(video_id)
+        if not transcript_list:
+            return None, "No transcript available for this video."
 
         segments = []
         for item in transcript_list:
