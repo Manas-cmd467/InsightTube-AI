@@ -34,13 +34,8 @@ def get_transcript_text(url):
         if not video_id:
             return None, "Could not extract video ID from the URL."
             
-        ytt_api = YouTubeTranscriptApi()
-        try:
-            transcript_list = ytt_api.fetch(video_id)
-            transcripts_new = [item.text for item in transcript_list]
-        except AttributeError:
-            transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-            transcripts_new = [item["text"] for item in transcript_list]
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+        transcripts_new = [item["text"] for item in transcript_list]
 
         # Combine transcript text parts into a single string
         full_transcript = " ".join(transcripts_new)
