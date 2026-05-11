@@ -55,11 +55,16 @@ def get_transcript_segments(url):
 
         segments = []
         for item in transcript_list:
-            text = getattr(item, "text", "").strip()
+            if not hasattr(item, "text") or not hasattr(item, "start"):
+                continue
+            raw_text = item.text
+            if raw_text is None:
+                continue
+            text = raw_text.strip()
             # Auto-captions can include spacing-only artifacts; skip them to avoid noisy embeddings.
             if not text:
                 continue
-            start = float(getattr(item, "start", 0.0))
+            start = float(item.start)
             segments.append({"text": text, "start": start})
 
         if not segments:
