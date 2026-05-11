@@ -1,17 +1,18 @@
 import streamlit as st
 import os
-from langchain_community.document_loaders import YoutubeLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from youtube_transcript_api import YouTubeTranscriptApi
-from langchain.schema.runnable import RunnableLambda
+from langchain_core.runnables import RunnableLambda
 import re
 
 # --- HELPER FUNCTIONS (Your RAG Core Logic) ---
+load_dotenv()
 
 def get_video_id(url):
     """Extracts the video ID from a YouTube URL."""
@@ -33,13 +34,15 @@ def get_transcript_text(url):
         if not video_id:
             return None, "Could not extract video ID from the URL."
             
-        # ytt_api = YouTubeTranscriptApi()
-        # transcript_list = ytt_api.get_transcript(video_id)
         ytt_api = YouTubeTranscriptApi()
-        transcript_list=ytt_api.fetch(video_id)
-        
+        try:
+            transcript_list = ytt_api.fetch(video_id)
+            transcripts_new = [item.text for item in transcript_list]
+        except AttributeError:
+            transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+            transcripts_new = [item["text"] for item in transcript_list]
+
         # Combine transcript text parts into a single string
-        transcripts_new = [item.text for item in transcript_list]
         full_transcript = " ".join(transcripts_new)
         
         return full_transcript, None
@@ -47,7 +50,7 @@ def get_transcript_text(url):
         return None, f"An error occurred while fetching the transcript: {e}"
 
 
-def get_vector_store(text, gemini_api_key):
+def get_vector_store(text):
     """
     Creates and returns a FAISS vector store from the given text.
     """
@@ -97,9 +100,6 @@ def create_rag_chain(vectorstore, gemini_api_key):
     )
     
     # Define the RAG chain
-    def get_context(query):
-        return retriever.invoke(query)
-
     rag_chain = (
         {
             "context": RunnableLambda(lambda x: x['query']) | retriever | format_docs,
@@ -127,7 +127,13 @@ with st.sidebar:
     st.header("Setup")
     
     youtube_url = st.text_input("Enter YouTube URL:", key="youtube_url_input")
-    gemini_api_key = st.text_input("Enter your Gemini API Key:", type="password", key="gemini_api_key_input")
+    default_api_key = os.getenv("GOOGLE_API_KEY", "")
+    gemini_api_key = st.text_input(
+        "Enter your Gemini API Key:",
+        type="password",
+        value=default_api_key,
+        key="gemini_api_key_input",
+    )
 
     if st.button("Process Video", key="process_button"):
         if not youtube_url:
@@ -147,7 +153,7 @@ with st.sidebar:
                     st.session_state.rag_chain = None
                 else:
                     # Create vector store
-                    vector_store = get_vector_store(transcript, gemini_api_key)
+                    vector_store = get_vector_store(transcript)
                     if vector_store:
                         # Create and store the RAG chain in session state
                         st.session_state.rag_chain = create_rag_chain(vector_store, gemini_api_key)
