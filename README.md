@@ -51,7 +51,7 @@ flowchart TD
 - Multi-video support
 - Playlist ingestion
 - Chat memory
-- Citation support with richer timestamp mapping
+- Deep-link citation URLs with exact YouTube timestamp jumps
 - PDF + YouTube hybrid RAG
 
 ## Setup
