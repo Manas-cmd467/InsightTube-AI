@@ -16,7 +16,7 @@ load_dotenv()
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 200
 MAX_CITATION_SNIPPET_LENGTH = 180
-# 1200/200 keeps enough local context for QA while still improving retrieval precision.
+# CHUNK_SIZE/CHUNK_OVERLAP balance QA context continuity with retrieval precision.
 
 # --- HELPER FUNCTIONS ---
 
@@ -102,10 +102,9 @@ def build_citations(docs, limit=3):
     for doc in docs:
         timestamp = doc.metadata.get("timestamp", "00:00")
         snippet = " ".join(doc.page_content.split())
-        key = (timestamp, snippet)
-        if key in seen:
+        if timestamp in seen:
             continue
-        seen.add(key)
+        seen.add(timestamp)
         truncated_snippet = snippet[:MAX_CITATION_SNIPPET_LENGTH]
         if len(snippet) > MAX_CITATION_SNIPPET_LENGTH:
             truncated_snippet += "..."
