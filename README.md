@@ -38,8 +38,8 @@ flowchart TD
 6. Generate grounded response using Gemini
 
 ## Chunking Rationale
-- `chunk_size=1200`: balances retrieval precision and semantic completeness for spoken transcript text.
-- `chunk_overlap=200`: preserves continuity across adjacent transcript segments so boundary facts are not lost.
+- `chunk_size = 1200`: balances retrieval precision and semantic completeness for spoken transcript text.
+- `chunk_overlap = 200`: preserves continuity across adjacent transcript segments so boundary facts are not lost.
 
 ## Challenges Faced
 - Transcript noise

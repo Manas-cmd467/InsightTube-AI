@@ -33,7 +33,7 @@ def get_video_id(url):
 
 def format_timestamp(seconds):
     """Converts float seconds to MM:SS format."""
-    total_seconds = max(0, int(seconds))
+    total_seconds = max(0, round(seconds))
     minutes, secs = divmod(total_seconds, 60)
     return f"{minutes:02d}:{secs:02d}"
 
@@ -53,6 +53,7 @@ def get_transcript_segments(url):
         segments = []
         for item in transcript_list:
             text = getattr(item, "text", "").strip()
+            # Skip empty caption fragments that add no retrieval value.
             if not text:
                 continue
             start = float(getattr(item, "start", 0.0))
@@ -101,6 +102,7 @@ def build_citations(docs, limit=3):
     seen = set()
     for doc in docs:
         timestamp = doc.metadata.get("timestamp", "00:00")
+        # Normalize whitespace for cleaner citation previews.
         snippet = " ".join(doc.page_content.split())
         if timestamp in seen:
             continue
