@@ -15,6 +15,7 @@ load_dotenv()
 
 CHUNK_SIZE = 1200
 CHUNK_OVERLAP = 200
+MAX_CITATION_SNIPPET_LENGTH = 180
 # 1200/200 keeps enough local context for QA while still improving retrieval precision.
 
 # --- HELPER FUNCTIONS ---
@@ -76,7 +77,6 @@ def get_vector_store(transcript_segments):
         Document(
             page_content=segment["text"],
             metadata={
-                "start_seconds": segment["start"],
                 "timestamp": format_timestamp(segment["start"])
             }
         )
@@ -106,7 +106,7 @@ def build_citations(docs, limit=3):
         if key in seen:
             continue
         seen.add(key)
-        citations.append({"timestamp": timestamp, "snippet": snippet[:180]})
+        citations.append({"timestamp": timestamp, "snippet": snippet[:MAX_CITATION_SNIPPET_LENGTH]})
         if len(citations) >= limit:
             break
     return citations
